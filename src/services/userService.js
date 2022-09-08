@@ -27,6 +27,14 @@ const userService = {
     const token = generateToken(userObject);
     return token;
   },
+
+  async getAllUsers() {
+    const result = await User.findAll({
+      attributes: { exclude: ['password'] },
+    });
+    const users = result.map((user) => user.dataValues);
+    return users;
+  },
 };
 
 module.exports = userService;

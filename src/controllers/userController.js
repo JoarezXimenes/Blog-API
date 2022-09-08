@@ -8,6 +8,11 @@ const userController = {
     const token = await userService.createUser({ displayName, email, password, image });
     res.status(201).json({ token });
   },
+
+  async getAllUsers(_req, res) {
+    const users = await userService.getAllUsers();
+    res.status(200).json(users);
+  },
 };
 
 module.exports = userController;
