@@ -1,5 +1,6 @@
 const { User } = require('../database/models');
 const Error400 = require('../errors/Error400');
+const { generateToken } = require('../helpers/token');
 
 const loginService = {
   validateLoginBody({ email, password }) {
@@ -14,10 +15,14 @@ const loginService = {
         email,
         password,
       },
+      attributes: { exclude: ['password'] },
     });
     if (!verified) {
       throw new Error400('Invalid fields');
     }
+
+    const token = generateToken(verified.dataValues);
+    return token;
   },
 };
 
