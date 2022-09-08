@@ -1,8 +1,10 @@
 const errorMiddleware = (err, _req, res, _next) => {
-  const { name, message } = err;
+  const { name, message, status } = err;
   switch (name) {
-    case 'NotFoundError': res.status(404).json({ message }); break;
-    case 'Error400': res.status(400).json({ message }); break;
+    case 'Error400': res.status(status).json({ message }); break;
+    case 'ValidationError': res.status(status).json({ message }); break;
+    case 'Conflict': res.status(status).json({ message }); break;
+    case 'BadRequest': res.status(status).json({ message }); break;
     default: console.warn(err); res.sendStatus(500);
   }
 };

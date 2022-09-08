@@ -1,5 +1,4 @@
 require('dotenv').config();
-require('express-async-errors');
 const app = require('./api');
 
 // não remova a variável `API_PORT` ou o `listen`

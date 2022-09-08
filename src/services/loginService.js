@@ -1,11 +1,11 @@
 const { User } = require('../database/models');
-const Error400 = require('../errors/Error400');
+const BadRequest = require('../errors/BadRequest');
 const { generateToken } = require('../helpers/token');
 
 const loginService = {
   validateLoginBody({ email, password }) {
     if (!email || !password) {
-      throw new Error400('Some required fields are missing');
+      throw new BadRequest('Some required fields are missing');
     }
   },
 
@@ -18,7 +18,7 @@ const loginService = {
       attributes: { exclude: ['password'] },
     });
     if (!verified) {
-      throw new Error400('Invalid fields');
+      throw new BadRequest('Invalid fields');
     }
 
     const token = generateToken(verified.dataValues);
