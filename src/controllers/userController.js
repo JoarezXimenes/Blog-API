@@ -1,4 +1,5 @@
 const userService = require('../services/userService');
+const NotFoundError = require('../errors/NotFoundError');
 
 const userController = {
   async createUSer(req, res) {
@@ -12,6 +13,13 @@ const userController = {
   async getAllUsers(_req, res) {
     const users = await userService.getAllUsers();
     res.status(200).json(users);
+  },
+
+  async getUserById(req, res) {
+    const { id } = req.params;
+    const user = await userService.getUserById(Number(id));
+    if (!user) throw new NotFoundError('User does not exist');
+    res.status(200).json(user);
   },
 };
 

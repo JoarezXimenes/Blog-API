@@ -1,5 +1,6 @@
 const express = require('express');
 require('express-async-errors');
+const categoryRoutes = require('./routes/categoryRoutes');
 
 const userRoutes = require('./routes/userRoutes');
 
@@ -15,6 +16,8 @@ app.use(express.json());
 app.post('/login', loginController.login);
 
 app.use('/user', userRoutes);
+
+app.use('/category', categoryRoutes);
 
 // ...
 

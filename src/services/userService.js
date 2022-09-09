@@ -35,6 +35,18 @@ const userService = {
     const users = result.map((user) => user.dataValues);
     return users;
   },
+
+  async getUserById(id) {
+    const result = await User.findOne({
+      where: {
+        id,
+      },
+      attributes: { exclude: ['password'] },
+    });
+    if (!result) return null;
+    const user = result.dataValues;
+    return user;
+  },
 };
 
 module.exports = userService;
