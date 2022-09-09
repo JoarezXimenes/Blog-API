@@ -12,6 +12,12 @@ const categoryService = {
     const category = result.dataValues;
     return category;
   },
+
+  async getAllCategories() {
+    const result = await Category.findAll();
+    const categories = result.map((cat) => cat.dataValues);
+    return categories;
+  },
 };
 
 module.exports = categoryService;

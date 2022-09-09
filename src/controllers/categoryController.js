@@ -7,6 +7,11 @@ const categoryController = {
     const category = await categoryService.createCategory(name);
     res.status(201).json(category);
   },
+
+  async getAllCategories(_req, res) {
+    const categories = await categoryService.getAllCategories();
+    res.status(200).json(categories);
+  },
 };
 
 module.exports = categoryController;
