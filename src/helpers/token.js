@@ -13,7 +13,8 @@ const verifyToken = (req, _res, next) => {
   const { authorization } = req.headers;
   if (!authorization) throw new UnauthorizedError('Token not found');
   try {
-    jwt.verify(authorization, JWT_SECRET);
+    const data = jwt.verify(authorization, JWT_SECRET);
+    req.user = data;
     next();
   } catch (error) {
     throw new UnauthorizedError('Expired or invalid token');
