@@ -17,7 +17,7 @@ app.post('/login', loginController.login);
 
 app.use('/user', userRoutes);
 
-app.use('/category', categoryRoutes);
+app.use('/categories', categoryRoutes);
 
 // ...
 
