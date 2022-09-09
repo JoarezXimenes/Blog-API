@@ -15,6 +15,12 @@ const blogPostController = {
     const posts = await blogPostService.getAllPosts();
     res.status(200).json(posts);
   },
+
+  async getPostById(req, res) {
+    const { id } = req.params;
+    const post = await blogPostService.getPostById(id);
+    res.status(200).json(post);
+  },
 };
 
 module.exports = blogPostController;

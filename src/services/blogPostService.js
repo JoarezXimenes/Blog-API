@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const { BlogPost, PostCategory, User, Category } = require('../database/models');
 const config = require('../database/config/config');
 const BadRequest = require('../errors/BadRequest');
+const NotFoundError = require('../errors/NotFoundError');
 
 const sequelize = new Sequelize(config.development);
 
@@ -47,6 +48,24 @@ const blogPostService = {
     const posts = result.map((post) => post.dataValues);
 
     return posts;
+  },
+
+  async getPostById(id) {
+    const result = await BlogPost.findOne({
+      where: { id },
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: { exclude: ['password'] },
+      }, {
+        model: Category,
+        as: 'categories',
+      }],
+    });
+    if (!result) throw new NotFoundError('Post does not exist');
+
+    const post = result.dataValues;
+    return post;
   },
 };
 
