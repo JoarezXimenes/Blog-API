@@ -10,6 +10,11 @@ const blogPostController = {
     const post = await blogPostService.createPost({ title, content, categoryIds, id });
     res.status(201).json(post);
   },
+
+  async getAllPosts(_req, res) {
+    const posts = await blogPostService.getAllPosts();
+    res.status(200).json(posts);
+  },
 };
 
 module.exports = blogPostController;
