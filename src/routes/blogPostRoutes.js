@@ -9,5 +9,6 @@ blogPostRoutes.post('/', verifyToken, blogPostController.createPost);
 blogPostRoutes.get('/', verifyToken, blogPostController.getAllPosts);
 blogPostRoutes.get('/:id', verifyToken, blogPostController.getPostById);
 blogPostRoutes.put('/:id', verifyToken, blogPostController.updatePost);
+blogPostRoutes.delete('/:id', verifyToken, blogPostController.deletePost);
 
 module.exports = blogPostRoutes;

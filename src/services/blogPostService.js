@@ -3,6 +3,7 @@ const { BlogPost, PostCategory, User, Category } = require('../database/models')
 const config = require('../database/config/config');
 const BadRequest = require('../errors/BadRequest');
 const NotFoundError = require('../errors/NotFoundError');
+const ServerError = require('../errors/ServerError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const sequelize = new Sequelize(config.development);
@@ -29,9 +30,7 @@ const blogPostService = {
         userId: id,
       });
       const post = result.dataValues;
-      console.log(post);
       const bulkIds = categoryIds.map((catId) => ({ categoryId: catId, postId: post.id }));
-      console.log(bulkIds);
       await PostCategory.bulkCreate(bulkIds);
       return post;
     } catch (error) {
@@ -83,7 +82,7 @@ const blogPostService = {
         attributes: { exclude: ['password'] },
       }],
     });
-    if (!result) throw new UnauthorizedError('Post does not exist');
+    if (!result) throw new NotFoundError('Post does not exist');
     const user = result.dataValues.user.dataValues;
     if (user.id !== userId) throw new UnauthorizedError('Unauthorized user');
   },
@@ -91,14 +90,16 @@ const blogPostService = {
   async updatePost({ postId, title, content }) {
     const result = await BlogPost.update({ title, content }, {
       where: { id: postId },
-      include: [{
-        model: User,
-        as: 'user',
-        attributes: { exclude: ['password'] },
-      }],
     });
-    if (!result) throw new Error('server error');
+    if (!result) throw new ServerError('server error');
     return result;
+  },
+
+  async deletePost(id) {
+    const result = await BlogPost.destroy({
+      where: { id },
+    });
+    if (!result) throw new ServerError('server error');
   },
 };
 
