@@ -2,6 +2,7 @@ const Joi = require('joi');
 const { User } = require('../database/models');
 const runSchema = require('../helpers/runSchema');
 const Conflict = require('../errors/Conflict');
+const ServerError = require('../errors/ServerError');
 const { generateToken } = require('../helpers/token');
 
 const userService = {
@@ -46,6 +47,16 @@ const userService = {
     if (!result) return null;
     const user = result.dataValues;
     return user;
+  },
+
+  async deleteUser(id) {
+    const result = await User.destroy({
+      where: {
+        id,
+      },
+    });
+
+    if (!result) throw new ServerError('server error');
   },
 };
 
