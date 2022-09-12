@@ -3,12 +3,18 @@ const { BlogPost, PostCategory, User, Category } = require('../database/models')
 const config = require('../database/config/config');
 const BadRequest = require('../errors/BadRequest');
 const NotFoundError = require('../errors/NotFoundError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const sequelize = new Sequelize(config.development);
 
 const blogPostService = {
   validatePostBody({ title, content, categoryIds }) {
     if (!title || !content || !categoryIds) {
+      throw new BadRequest('Some required fields are missing');
+    }
+  },
+  validateUpdateBody({ title, content }) {
+    if (!title || !content) {
       throw new BadRequest('Some required fields are missing');
     }
   },
@@ -66,6 +72,33 @@ const blogPostService = {
 
     const post = result.dataValues;
     return post;
+  },
+
+  async verifyUserPostId({ postId, userId }) {
+    const result = await BlogPost.findOne({
+      where: { id: postId },
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: { exclude: ['password'] },
+      }],
+    });
+    if (!result) throw new UnauthorizedError('Post does not exist');
+    const user = result.dataValues.user.dataValues;
+    if (user.id !== userId) throw new UnauthorizedError('Unauthorized user');
+  },
+
+  async updatePost({ postId, title, content }) {
+    const result = await BlogPost.update({ title, content }, {
+      where: { id: postId },
+      include: [{
+        model: User,
+        as: 'user',
+        attributes: { exclude: ['password'] },
+      }],
+    });
+    if (!result) throw new Error('server error');
+    return result;
   },
 };
 

@@ -21,6 +21,17 @@ const blogPostController = {
     const post = await blogPostService.getPostById(id);
     res.status(200).json(post);
   },
+
+  async updatePost(req, res) {
+    const postId = req.params.id;
+    const userId = req.user.id;
+    const { title, content } = req.body;
+    await blogPostService.verifyUserPostId({ postId, userId });
+    await blogPostService.validateUpdateBody({ title, content });
+    await blogPostService.updatePost({ title, content, postId });
+    const updatedPost = await blogPostService.getPostById(postId);
+    res.status(200).json(updatedPost);
+  },
 };
 
 module.exports = blogPostController;
