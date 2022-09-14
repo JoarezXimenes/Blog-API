@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const { User } = require('../database/models');
 const BadRequest = require('../errors/BadRequest');
 const { generateToken } = require('../helpers/token');
@@ -13,15 +14,18 @@ const loginService = {
     const verified = await User.findOne({
       where: {
         email,
-        password,
       },
-      attributes: { exclude: ['password'] },
     });
     if (!verified) {
       throw new BadRequest('Invalid fields');
     }
-
-    const token = generateToken(verified.dataValues);
+    const user = verified.dataValues;
+    if (!bcrypt.compareSync(password, user.password)) {
+      throw new BadRequest('Invalid fields');
+    }
+    delete user.password;
+    console.log(user);
+    const token = generateToken(user);
     return token;
   },
 };

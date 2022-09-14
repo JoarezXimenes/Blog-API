@@ -4,6 +4,7 @@ const runSchema = require('../helpers/runSchema');
 const Conflict = require('../errors/Conflict');
 const ServerError = require('../errors/ServerError');
 const { generateToken } = require('../helpers/token');
+const bcrypt = require('bcryptjs');
 
 const userService = {
   validateUserBody: runSchema(Joi.object({
@@ -21,7 +22,9 @@ const userService = {
   },
 
   async createUser({ displayName, email, password, image }) {
-    const result = await User.create({ displayName, email, password, image });
+    const salt = bcrypt.genSaltSync(10);
+    const passwordHash = bcrypt.hashSync(password, salt);
+    const result = await User.create({ displayName, email, password: passwordHash, image });
     if (!result) throw new Error();
     const userObject = result.dataValues;
     delete userObject.password;
