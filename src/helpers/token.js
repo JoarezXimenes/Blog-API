@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const CustomError = require('../errors/CustomError');
 
 const JWT_SECRET = process.env.JWT_SECRET || null;
 const JWT_OPTIONS = { algorithm: 'HS256', expiresIn: '1d' };
@@ -11,13 +11,13 @@ const generateToken = (payload) => {
 
 const verifyToken = (req, _res, next) => {
   const { authorization } = req.headers;
-  if (!authorization) throw new UnauthorizedError('Token not found');
+  if (!authorization) throw new CustomError(401, 'Token not found');
   try {
     const data = jwt.verify(authorization, JWT_SECRET);
     req.user = data;
     next();
   } catch (error) {
-    throw new UnauthorizedError('Expired or invalid token');
+    throw new CustomError(401, 'Expired or invalid token');
   }
 };
 

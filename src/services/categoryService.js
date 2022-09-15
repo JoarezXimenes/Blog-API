@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { Category } = require('../database/models');
 const runSchema = require('../helpers/runSchema');
-const BadRequest = require('../errors/BadRequest');
+const CustomError = require('../errors/CustomError');
 
 const categoryService = {
   validateCategoryBody: runSchema(Joi.object({
@@ -28,7 +28,7 @@ const categoryService = {
     });
     const categories = result.map((cat) => cat.dataValues);
     if (categories.length !== array.length) {
-      throw new BadRequest('"categoryIds" not found');
+      throw new CustomError(400, '"categoryIds" not found');
     }
   },
 };

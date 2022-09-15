@@ -1,12 +1,12 @@
 const bcrypt = require('bcryptjs');
 const { User } = require('../database/models');
-const BadRequest = require('../errors/BadRequest');
+const CustomError = require('../errors/CustomError');
 const { generateToken } = require('../helpers/token');
 
 const loginService = {
   validateLoginBody({ email, password }) {
     if (!email || !password) {
-      throw new BadRequest('Some required fields are missing');
+      throw new CustomError(400, 'Some required fields are missing');
     }
   },
 
@@ -17,11 +17,11 @@ const loginService = {
       },
     });
     if (!verified) {
-      throw new BadRequest('Invalid fields');
+      throw new CustomError(400, 'Invalid fields');
     }
     const user = verified.dataValues;
     if (!bcrypt.compareSync(password, user.password)) {
-      throw new BadRequest('Invalid fields');
+      throw new CustomError(400, 'Invalid fields');
     }
     delete user.password;
     console.log(user);

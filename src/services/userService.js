@@ -1,10 +1,9 @@
 const Joi = require('joi');
+const bcrypt = require('bcryptjs');
 const { User } = require('../database/models');
 const runSchema = require('../helpers/runSchema');
-const Conflict = require('../errors/Conflict');
-const ServerError = require('../errors/ServerError');
+const CustomError = require('../errors/CustomError');
 const { generateToken } = require('../helpers/token');
-const bcrypt = require('bcryptjs');
 
 const userService = {
   validateUserBody: runSchema(Joi.object({
@@ -17,7 +16,7 @@ const userService = {
   async verifyIfEmailExists(email) {
     const user = await User.findOne({ where: { email } });
     if (user) {
-      throw new Conflict('User already registered');
+      throw new CustomError(409, 'User already registered');
     }
   },
 
@@ -47,7 +46,7 @@ const userService = {
       },
       attributes: { exclude: ['password'] },
     });
-    if (!result) return null;
+    if (!result) throw new CustomError(404, 'User does not exist');
     const user = result.dataValues;
     return user;
   },
@@ -59,7 +58,7 @@ const userService = {
       },
     });
 
-    if (!result) throw new ServerError('server error');
+    if (!result) throw new CustomError(500, 'server error');
   },
 };
 

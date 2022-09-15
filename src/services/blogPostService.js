@@ -1,22 +1,19 @@
 const Sequelize = require('sequelize');
 const { BlogPost, PostCategory, User, Category } = require('../database/models');
 const config = require('../database/config/config');
-const BadRequest = require('../errors/BadRequest');
-const NotFoundError = require('../errors/NotFoundError');
-const ServerError = require('../errors/ServerError');
-const UnauthorizedError = require('../errors/UnauthorizedError');
+const CustomError = require('../errors/CustomError');
 
 const sequelize = new Sequelize(config.development);
 
 const blogPostService = {
   validatePostBody({ title, content, categoryIds }) {
     if (!title || !content || !categoryIds) {
-      throw new BadRequest('Some required fields are missing');
+      throw new CustomError(400, 'Some required fields are missing');
     }
   },
   validateUpdateBody({ title, content }) {
     if (!title || !content) {
-      throw new BadRequest('Some required fields are missing');
+      throw new CustomError(400, 'Some required fields are missing');
     }
   },
 
@@ -67,7 +64,7 @@ const blogPostService = {
         as: 'categories',
       }],
     });
-    if (!result) throw new NotFoundError('Post does not exist');
+    if (!result) throw new CustomError(404, 'Post does not exist');
 
     const post = result.dataValues;
     return post;
@@ -82,16 +79,16 @@ const blogPostService = {
         attributes: { exclude: ['password'] },
       }],
     });
-    if (!result) throw new NotFoundError('Post does not exist');
+    if (!result) throw new CustomError(404, 'Post does not exist');
     const user = result.dataValues.user.dataValues;
-    if (user.id !== userId) throw new UnauthorizedError('Unauthorized user');
+    if (user.id !== userId) throw new CustomError(401, 'Unauthorized user');
   },
 
   async updatePost({ postId, title, content }) {
     const result = await BlogPost.update({ title, content }, {
       where: { id: postId },
     });
-    if (!result) throw new ServerError('server error');
+    if (!result) throw new CustomError(500, 'server error');
     return result;
   },
 
@@ -99,7 +96,7 @@ const blogPostService = {
     const result = await BlogPost.destroy({
       where: { id },
     });
-    if (!result) throw new ServerError('server error');
+    if (!result) throw new CustomError(500, 'server error');
   },
 };
 
